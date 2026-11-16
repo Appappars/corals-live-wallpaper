@@ -1,17 +1,16 @@
-﻿<#
-  Corals — live wallpaper for Lively Wallpaper.
-  One-command installer: installs Lively (winget), drops the wallpaper into the
-  Lively library and applies it to every screen.
+# Corals - live wallpaper for Lively Wallpaper
+# One-command installer: installs Lively (winget), copies the wallpaper into the
+# Lively library and applies it to every screen.
+#
+# Usage (from README):
+#     irm https://raw.githubusercontent.com/Appappars/corals-live-wallpaper/main/install.ps1 | iex
+#
+# Options:
+#     -LibraryPath <dir>   override the Lively wallpapers folder
+#     -SkipLively          do not try to install Lively, only the wallpaper
+#     -NoApply             install files only, do not set the wallpaper
+#     -DryRun              print what would happen, change nothing
 
-  Usage (from README):
-      irm https://raw.githubusercontent.com/Appappars/corals-live-wallpaper/main/install.ps1 | iex
-
-  Options:
-      -LibraryPath <dir>   override the Lively wallpapers folder
-      -SkipLively          do not try to install Lively, only the wallpaper
-      -NoApply             install files only, do not set the wallpaper
-      -DryRun              print what would happen, change nothing
-#>
 [CmdletBinding()]
 param(
     [string]$LibraryPath,
@@ -22,13 +21,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch { }
 
-$Repo    = 'Appappars/corals-live-wallpaper'
-$ZipUrl  = "https://github.com/$Repo/releases/latest/download/corals.zip"
+$Repo      = 'Appappars/corals-live-wallpaper'
+$ZipUrl    = "https://github.com/$Repo/releases/latest/download/corals.zip"
 $LivelyUrl = 'https://www.rocksdanister.com/lively/'
-$StoreLib = Join-Path $env:LOCALAPPDATA 'Packages\12030rocksdanister.LivelyWallpaper_97hta09mmv6hy\LocalCache\Local\Lively Wallpaper\Library\wallpapers'
-$UserLib  = Join-Path $env:LOCALAPPDATA 'Lively Wallpaper\Library\wallpapers'
+$StoreLib  = Join-Path $env:LOCALAPPDATA 'Packages\12030rocksdanister.LivelyWallpaper_97hta09mmv6hy\LocalCache\Local\Lively Wallpaper\Library\wallpapers'
+$UserLib   = Join-Path $env:LOCALAPPDATA 'Lively Wallpaper\Library\wallpapers'
 
 function Write-Step($text) { Write-Host "`n==> $text" -ForegroundColor Cyan }
 function Write-Ok($text)   { Write-Host "    $text" -ForegroundColor Green }
@@ -63,7 +62,7 @@ function Find-Lively {
 
 function Install-LivelyViaWinget {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { return $false }
-    Write-Step 'Устанавливаю Lively Wallpaper через winget (может появиться запрос UAC)'
+    Write-Step 'Installing Lively Wallpaper via winget (a UAC prompt may appear)'
     & winget install --id rocksdanister.LivelyWallpaper --exact --source winget `
         --accept-package-agreements --accept-source-agreements --silent
     # 0 = ok, -1978335189 = already installed
@@ -77,7 +76,7 @@ Write-Host ' | |   / _ \| ''__/ _` | / __|' -ForegroundColor DarkGray
 Write-Host ' | |__| (_) | | | (_| | \__ \' -ForegroundColor DarkGray
 Write-Host '  \____\___/|_|  \__,_|_|___/' -ForegroundColor DarkGray
 Write-Host ''
-Write-Host ' Corals — живые обои для Lively Wallpaper' -ForegroundColor Gray
+Write-Host ' Corals - live wallpaper for Lively Wallpaper' -ForegroundColor Gray
 Write-Host ''
 
 # ---- 1. Lively itself -------------------------------------------------------
@@ -87,37 +86,36 @@ if (-not $lively -and -not $SkipLively) {
     $lively = Find-Lively
 }
 if (-not $lively -and -not $SkipLively) {
-    Write-Warn "Lively Wallpaper не найден и автоматом не поставился."
-    Write-Warn "Поставь вручную: $LivelyUrl"
-    Write-Warn "Потом запусти этот же скрипт ещё раз."
+    Write-Warn 'Lively Wallpaper was not found and could not be installed automatically.'
+    Write-Warn "Please install it manually: $LivelyUrl"
+    Write-Warn 'Then run this script again.'
     if (-not $DryRun) { exit 1 }
 }
-if ($lively) { Write-Step "Lively: $lively" } else { Write-Warn 'Lively не найден — ставлю только файлы обоев.' }
+if ($lively) { Write-Step "Lively: $lively" } else { Write-Warn 'Lively not found - installing wallpaper files only.' }
 
 # ---- 2. Library path --------------------------------------------------------
 if (-not $LibraryPath) {
     if (Test-Path $StoreLib) {
         $LibraryPath = $StoreLib
-        Write-Warn 'Найдена версия из Microsoft Store — использую её папку библиотеки.'
+        Write-Warn 'Microsoft Store edition detected - using its library folder.'
     } else {
         $LibraryPath = $UserLib
     }
 }
 $dest = Join-Path $LibraryPath 'corals'
-Write-Step "Папка библиотеки: $dest"
+Write-Step "Library folder: $dest"
 
 # ---- 3. Download ------------------------------------------------------------
 $tmpZip = Join-Path $env:TEMP ("corals-" + [guid]::NewGuid().ToString('n') + ".zip")
-Write-Step 'Скачиваю обои с GitHub'
+Write-Step 'Downloading the wallpaper from GitHub'
 Write-Ok $ZipUrl
-if (-not $DryRun) {
-    Invoke-WebRequest -Uri $ZipUrl -OutFile $tmpZip -UseBasicParsing
-    Write-Ok ("скачано {0:N1} МБ" -f ((Get-Item $tmpZip).Length / 1MB))
-}
-if ($DryRun) { Write-Warn '[dry-run] пропускаю скачивание и распаковку'; exit 0 }
+if ($DryRun) { Write-Warn '[dry-run] skipping download and extraction'; exit 0 }
+
+Invoke-WebRequest -Uri $ZipUrl -OutFile $tmpZip -UseBasicParsing
+Write-Ok ("downloaded {0:N1} MB" -f ((Get-Item $tmpZip).Length / 1MB))
 
 # ---- 4. Install into the library -------------------------------------------
-Write-Step 'Распаковываю в библиотеку Lively'
+Write-Step 'Unpacking into the Lively library'
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 $tmpDir = Join-Path $env:TEMP ("corals-" + [guid]::NewGuid().ToString('n'))
 Expand-Archive -Path $tmpZip -DestinationPath $tmpDir -Force
@@ -125,18 +123,18 @@ Copy-Item (Join-Path $tmpDir '*') $dest -Recurse -Force
 Remove-Item $tmpZip, $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
 
 foreach ($need in 'corals.html', 'LivelyInfo.json') {
-    if (-not (Test-Path (Join-Path $dest $need))) { throw "После распаковки нет $need в $dest" }
+    if (-not (Test-Path (Join-Path $dest $need))) { throw "Missing $need in $dest after unpacking" }
 }
-Write-Ok "готово: $dest"
+Write-Ok "done: $dest"
 
 # ---- 5. Apply ---------------------------------------------------------------
 if ($NoApply) {
-    Write-Step 'Готово. Открой Lively и нажми на плитку «Corals - live wallpaper».'
+    Write-Step 'Done. Open Lively and click the "Corals - live wallpaper" tile.'
     exit 0
 }
 
 if ($lively) {
-    Write-Step 'Применяю обои'
+    Write-Step 'Applying the wallpaper'
     $running = Get-Process -Name 'Lively' -ErrorAction SilentlyContinue
     if (-not $running) {
         Start-Process -FilePath $lively
@@ -150,12 +148,12 @@ if ($lively) {
     & $lively setwp --file $dest     2>$null | Out-Null
     & $lively --layout duplicate     2>$null | Out-Null
 
-    Write-Ok ' Обои установлены на все экраны.'
+    Write-Ok 'Wallpaper is now running on every screen.'
 } else {
-    Write-Ok 'Файлы на месте: открой Lively и нажми плитку «Corals - live wallpaper».'
+    Write-Ok 'Files are in place: open Lively and click the "Corals - live wallpaper" tile.'
 }
 
 Write-Host ''
-Write-Host ' Готово. Что дальше:' -ForegroundColor Gray
-Write-Host '   • панель настроек — значок ползунков в правом верхнем углу, Esc закрывает панель;' -ForegroundColor Gray
-Write-Host '   • колесо мыши меняет рецепт узора, R — пересевает, клик — вспышка роста.' -ForegroundColor Gray
+Write-Host ' What next:' -ForegroundColor Gray
+Write-Host '   * settings panel - the sliders icon in the top-right corner, Esc closes it;' -ForegroundColor Gray
+Write-Host '   * mouse wheel changes the recipe, R reseeds, click gives a growth burst.' -ForegroundColor Gray
