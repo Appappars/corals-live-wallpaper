@@ -1,0 +1,13 @@
+{
+  "AppVersion": "2.2.1.0",
+  "Arguments": "",
+  "Author": "Appappars",
+  "Contact": "https://github.com/Appappars",
+  "Desc": "Gray-Scott reaction-diffusion: corals grow by themselves, sharks carve corridors through them. Cursor feeds the reagent, click gives a burst, wheel changes the recipe.",
+  "FileName": "corals.html",
+  "IsAbsolutePath": false,
+  "License": "MIT (code) / CC0 (shark model)",
+  "Thumbnail": "",
+  "Title": "Corals - live wallpaper",
+  "Type": 1
+}

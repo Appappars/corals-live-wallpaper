@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Кораллы — живые обои для Windows</title>
+<meta name="description" content="Живые обои: кораллы растут сами, акулы проедают коридоры. Одна команда — и всё установлено." />
+<style>
+  :root{
+    --bg:#232220;
+    --panel:#2c2b28;
+    --fg:#f3f1ec;
+    --muted:#a8a49c;
+    --line:#454340;
+    --accent:#e8e4dc;
+    --r:10px;
+    --mono:ui-monospace,'Cascadia Mono',Consolas,monospace;
+    --serif:'Plantin MT Pro',Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg) radial-gradient(1200px 600px at 70% -10%, #34322e 0%, transparent 60%) no-repeat;
+    color:var(--fg); font:16px/1.55 var(--serif); -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:56px 24px 80px}
+  .kicker{font:11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  h1{font-weight:400;font-size:clamp(34px,5vw,58px);line-height:1.03;letter-spacing:-.015em;margin:.35em 0 .2em}
+  .lead{color:var(--muted);font-size:18px;max-width:60ch;margin:0 0 32px}
+  .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:#1b1a18;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .shot img{display:block;width:100%;height:auto}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0 8px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:var(--r);
+    border:1px solid var(--line);background:var(--panel);color:var(--fg);text-decoration:none;
+    font:12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;transition:.15s ease;
+  }
+  .btn:hover{border-color:var(--fg)}
+  .btn.primary{background:var(--fg);color:#232220;border-color:var(--fg)}
+  .btn.primary:hover{background:#fff}
+  .btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .cmd{
+    margin-top:26px;border:1px solid var(--line);border-radius:var(--r);background:#1b1a18;
+    display:flex;align-items:stretch;overflow:hidden;
+  }
+  .cmd code{
+    flex:1;padding:16px 18px;font:13px/1.5 var(--mono);color:#d9d5cc;
+    overflow-x:auto;white-space:nowrap;
+  }
+  .cmd button{
+    border:0;border-left:1px solid var(--line);background:var(--panel);color:var(--fg);
+    padding:0 18px;font:11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  }
+  .cmd button:hover{background:#3a3835}
+  .hint{color:var(--muted);font-size:14px;margin:10px 0 0}
+  h2{font-weight:400;font-size:24px;margin:56px 0 14px;letter-spacing:-.01em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:rgba(255,255,255,.02)}
+  .card b{display:block;font:11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  ol{padding-left:22px;color:var(--muted)} ol li{margin:6px 0}
+  a{color:var(--fg)}
+  footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font:12px/1.7 var(--mono);letter-spacing:.03em}
+  .ok{color:#9ecf8f}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Lively Wallpaper · HTML · WebGL2</p>
+  <h1>Кораллы</h1>
+  <p class="lead">Живой узор реакции-диффузии на весь рабочий стол: кораллы растут сами,
+     акулы проедают в них коридоры, курсор подливает реагент. Ни одного внешнего запроса —
+     всё в одном файле.</p>
+
+  <div class="shot"><img src="preview.png" alt="Превью обоев: коралловый узор и значок настроек в углу" /></div>
+
+  <div class="row">
+    <a class="btn primary" href="#install">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>
+      Установить
+    </a>
+    <a class="btn" href="https://www.rocksdanister.com/lively/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M4 21h16"/></svg>
+      Скачать Lively
+    </a>
+    <a class="btn" href="https://github.com/Appappars/corals-live-wallpaper/releases/latest/download/corals.zip">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16v13H4zM4 7l2-4h12l2 4M10 12h4"/></svg>
+      Скачать обои .zip
+    </a>
+  </div>
+
+  <h2 id="install">Одна команда</h2>
+  <p class="hint">Открой PowerShell (Win + X → «Терминал») и вставь строку — Lively поставится,
+     обои скачаются и применятся на все экраны.</p>
+  <div class="cmd">
+    <code id="cmdline">irm https://raw.githubusercontent.com/Appappars/corals-live-wallpaper/main/install.ps1 | iex</code>
+    <button id="copy" type="button">Копировать</button>
+  </div>
+  <p class="hint" id="copied"></p>
+
+  <h2>Или вручную — 4 шага</h2>
+  <ol>
+    <li>Поставь <a href="https://www.rocksdanister.com/lively/" target="_blank" rel="noopener">Lively Wallpaper</a>.</li>
+    <li>Скачай <a href="https://github.com/Appappars/corals-live-wallpaper/releases/latest/download/corals.zip">corals.zip</a>.</li>
+    <li>Перетащи zip в окно Lively — он появится в библиотеке.</li>
+    <li>Нажми плитку <b>Corals - live wallpaper</b>.</li>
+  </ol>
+
+  <h2>Что внутри</h2>
+  <div class="grid">
+    <div class="card"><b>Симуляция</b>Gray–Scott на WebGL2, разрешение зависит от ползунка «Детализация».</div>
+    <div class="card"><b>Жизнь</b>Акулы выедают коридоры, дно зарастает заново.</div>
+    <div class="card"><b>Управление</b>Значок ползунков в углу — панель; колесо — рецепт; R — пересев; клик — вспышка.</div>
+    <div class="card"><b>Нагрузка</b>~1 % ядра на экран; на паузе в полноэкранных играх.</div>
+  </div>
+
+  <footer>
+    Windows 10 1903+ / Windows 11 · Lively 2.x · MIT (код) · акула Quaternius (CC0)
+    · <a href="https://github.com/Appappars/corals-live-wallpaper">исходники на GitHub</a>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy');
+    var line = document.getElementById('cmdline');
+    var note = document.getElementById('copied');
+    btn.addEventListener('click', function () {
+      var text = line.textContent.trim();
+      function done() { note.textContent = 'Скопировано — вставь в PowerShell.'; setTimeout(function(){ note.textContent=''; }, 4000); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { note.textContent = text; }
+        document.body.removeChild(ta);
+      }
+    });
+  })();
+</script>
+</body>
+</html>
